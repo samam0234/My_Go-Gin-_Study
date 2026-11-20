@@ -1,0 +1,152 @@
+openapi: 3.0.3
+info:
+  title: Gin 게시판 API
+  version: 1.0.0
+  description: 게시판 공통 API 스펙 v1. 확장 경로는 이 파일 아래쪽에 따로 적습니다.
+servers:
+  - url: http://localhost:8080
+paths:
+  /health:
+    get:
+      summary: 건강 체크
+      responses:
+        "200":
+          description: ok
+  /api/auth/signup:
+    post:
+      summary: 회원가입
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password, nickname]
+              properties:
+                email: { type: string, format: email }
+                password: { type: string, minLength: 8, maxLength: 72 }
+                nickname: { type: string }
+      responses:
+        "201": { description: 생성 }
+        "400": { $ref: "#/components/responses/Error" }
+        "409": { $ref: "#/components/responses/Error" }
+  /api/auth/login:
+    post:
+      summary: 로그인
+      responses:
+        "200": { description: accessToken }
+        "401": { $ref: "#/components/responses/Error" }
+  /api/auth/logout:
+    post:
+      summary: 로그아웃
+      security: [{ bearer: [] }]
+      responses:
+        "204": { description: 본문 없음 }
+  /api/auth/me:
+    get:
+      summary: 내 정보
+      security: [{ bearer: [] }]
+      responses:
+        "200": { description: user }
+        "401": { $ref: "#/components/responses/Error" }
+  /api/posts:
+    get:
+      summary: 글 목록
+      parameters:
+        - in: query
+          name: q
+          schema: { type: string }
+        - in: query
+          name: page
+          schema: { type: integer, minimum: 1, default: 1 }
+        - in: query
+          name: limit
+          schema: { type: integer, minimum: 1, maximum: 50, default: 10 }
+        - in: query
+          name: sort
+          schema: { type: string, enum: [createdAt, -createdAt, -commentCount] }
+      responses:
+        "200": { description: data + meta }
+    post:
+      summary: 글 작성
+      security: [{ bearer: [] }]
+      parameters:
+        - in: header
+          name: Idempotency-Key
+          schema: { type: string }
+      responses:
+        "201": { description: 생성. Location 헤더 }
+        "400": { $ref: "#/components/responses/Error" }
+        "401": { $ref: "#/components/responses/Error" }
+  /api/posts/{id}:
+    get:
+      summary: 글 상세
+      parameters:
+        - $ref: "#/components/parameters/id"
+      responses:
+        "200": { description: data }
+        "404": { $ref: "#/components/responses/Error" }
+    patch:
+      summary: 부분 수정
+      security: [{ bearer: [] }]
+      parameters:
+        - $ref: "#/components/parameters/id"
+      responses:
+        "200": { description: data }
+        "403": { $ref: "#/components/responses/Error" }
+    delete:
+      summary: 삭제
+      security: [{ bearer: [] }]
+      parameters:
+        - $ref: "#/components/parameters/id"
+      responses:
+        "204": { description: 본문 없음 }
+  /api/posts/{id}/comments:
+    get:
+      summary: 댓글 목록
+      parameters:
+        - $ref: "#/components/parameters/id"
+      responses:
+        "200": { description: data }
+    post:
+      summary: 댓글 작성
+      security: [{ bearer: [] }]
+      parameters:
+        - $ref: "#/components/parameters/id"
+      responses:
+        "201": { description: 생성 }
+  /api/comments/{id}:
+    delete:
+      summary: 댓글 삭제
+      security: [{ bearer: [] }]
+      parameters:
+        - $ref: "#/components/parameters/id"
+      responses:
+        "204": { description: 본문 없음 }
+components:
+  securitySchemes:
+    bearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  parameters:
+    id:
+      name: id
+      in: path
+      required: true
+      schema: { type: integer, minimum: 1 }
+  responses:
+    Error:
+      description: 공통 오류
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: object
+                properties:
+                  code: { type: string }
+                  message: { type: string }
+                  fields: { type: object, additionalProperties: { type: array, items: { type: string } } }
+                  requestId: { type: string }

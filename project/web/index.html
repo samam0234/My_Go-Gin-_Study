@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Gin 게시판</title>
+  <link rel="stylesheet" href="/app.css">
+</head>
+<body>
+  <header>
+    <h1>Gin 게시판</h1>
+    <p id="status" role="status"></p>
+  </header>
+  <main>
+    <section>
+      <h2>로그인</h2>
+      <form id="login">
+        <label>이메일 <input name="email" type="email" autocomplete="username" required value="mina@example.com"></label>
+        <label>비밀번호 <input name="password" type="password" autocomplete="current-password" required minlength="8" value="password123"></label>
+        <button type="submit">로그인</button>
+      </form>
+      <form id="signup">
+        <h2>회원가입</h2>
+        <label>이메일 <input name="email" type="email" required></label>
+        <label>비밀번호 <input name="password" type="password" required minlength="8" maxlength="72"></label>
+        <label>별명 <input name="nickname" required maxlength="40"></label>
+        <button type="submit">가입</button>
+      </form>
+      <p id="who"></p>
+      <button id="logout" type="button" hidden>로그아웃</button>
+    </section>
+    <section>
+      <h2>글 목록</h2>
+      <form id="search">
+        <label>검색 <input name="q" maxlength="100"></label>
+        <button type="submit">검색</button>
+      </form>
+      <ul id="posts"></ul>
+      <p id="page"></p>
+      <button id="prev" type="button">이전</button>
+      <button id="next" type="button">다음</button>
+    </section>
+    <section>
+      <h2>글쓰기</h2>
+      <form id="writer">
+        <label>제목 <input name="title" required maxlength="200"></label>
+        <label>본문 <textarea name="body" required maxlength="20000"></textarea></label>
+        <button type="submit">등록</button>
+      </form>
+    </section>
+    <section>
+      <h2>상세</h2>
+      <article id="detail"></article>
+      <form id="comment">
+        <label>댓글 <input name="body" required maxlength="2000"></label>
+        <button type="submit">댓글 등록</button>
+      </form>
+    </section>
+    <section>
+      <h2>문서 질문</h2>
+      <form id="doc">
+        <label>제목 <input name="title" required maxlength="200"></label>
+        <label>내용 <textarea name="content" required></textarea></label>
+        <label>질문 <input name="question" required maxlength="2000"></label>
+        <button type="submit">질문하기</button>
+      </form>
+      <p id="answer"></p>
+      <ol id="sources"></ol>
+    </section>
+  </main>
+  <script src="/app.js"></script>
+</body>
+</html>

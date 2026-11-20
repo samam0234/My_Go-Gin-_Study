@@ -1,0 +1,41 @@
+services:
+  api:
+    build:
+      context: ..
+      dockerfile: project/Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      APP_ENV: development
+      SEED: "1"
+      JWT_SECRET: dev-only-change-me-please-32b
+      DB_DRIVER: sqlite
+      DB_DSN: file:/data/board.db?_pragma=busy_timeout(5000)
+      WEB_DIR: /app/web
+      OPENAPI_PATH: /app/openapi.yaml
+      CORS_ORIGIN: http://localhost:5173
+      AI_PROVIDER: mock
+      MCP_TOKEN: dev-mcp-token
+    volumes:
+      - boarddata:/data
+  postgres:
+    profiles: ["postgres"]
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: board
+      POSTGRES_PASSWORD: board
+      POSTGRES_DB: board
+    ports:
+      - "5432:5432"
+  mariadb:
+    profiles: ["mariadb"]
+    image: mariadb:11
+    environment:
+      MARIADB_ROOT_PASSWORD: board
+      MARIADB_DATABASE: board
+      MARIADB_USER: board
+      MARIADB_PASSWORD: board
+    ports:
+      - "3306:3306"
+volumes:
+  boarddata:

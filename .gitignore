@@ -1,0 +1,13 @@
+.env
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+uploads/
+bin/
+dist/
+coverage.out
+*.exe
+*.test
+.idea/
+.vscode/
